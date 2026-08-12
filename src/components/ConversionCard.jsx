@@ -29,29 +29,24 @@ const CURRENCIES = [
 const POPULAR_CODES = ['USD', 'EUR', 'GBP', 'KES'];
 
 export default function ConversionCard() {
-  // Store the formatted string directly in state to preserve commas while typing
   const [amount, setAmount] = useState('1,000');
   const [fromCurrency, setFromCurrency] = useState('USD');
   const [toCurrency, setToCurrency] = useState('KES');
   
-  // Modal State Management
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalTarget, setModalTarget] = useState('from'); // 'from' or 'to'
+  const [modalTarget, setModalTarget] = useState('from'); 
   const [searchQuery, setSearchQuery] = useState('');
 
   const fromObj = CURRENCIES.find(c => c.code === fromCurrency) || CURRENCIES[0];
   const toObj = CURRENCIES.find(c => c.code === toCurrency) || CURRENCIES[3];
 
-  // Helper to convert localized comma strings back into a clean float value for math integration
   const getRawNumericValue = (str) => {
     return parseFloat(str.replace(/,/g, '')) || 0;
   };
 
-  // Dynamic cross-multiplication exchange math
   const dynamicExchangeRate = toObj.rate / fromObj.rate;
   const rawTargetValue = getRawNumericValue(amount) * dynamicExchangeRate;
 
-  // Real-time counting motion engines
   const countMotion = useMotionValue(0);
   const roundedCount = useTransform(countMotion, (latest) => 
     Math.floor(latest).toLocaleString('en-US')
@@ -65,23 +60,20 @@ export default function ConversionCard() {
     return () => controls.stop();
   }, [rawTargetValue, countMotion]);
 
-  // Strips characters, enforces digits, and formats commas into the input string dynamically
   const handleAmountChange = (e) => {
-    const inputVal = e.target.value.replace(/[^0-9.]/g, ''); // strip non-numeric keys
+    const inputVal = e.target.value.replace(/[^0-9.]/g, '');
     
     if (inputVal === '') {
       setAmount('');
       return;
     }
 
-    // Split decimal halves to prevent wiping float trailing numbers
     const parts = inputVal.split('.');
     parts[0] = Number(parts[0]).toLocaleString('en-US'); 
     
     setAmount(parts.length > 1 ? `${parts[0]}.${parts[1]}` : parts[0]);
   };
 
-  // Handle Interchange Swap
   const handleSwap = () => {
     const temp = fromCurrency;
     setFromCurrency(toCurrency);
@@ -105,7 +97,6 @@ export default function ConversionCard() {
     setIsModalOpen(false);
   };
 
-  // Filter list based on user search input
   const filteredCurrencies = CURRENCIES.filter(c =>
     c.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -113,28 +104,28 @@ export default function ConversionCard() {
   );
 
   return (
-    <div className="w-full bg-white border-2 border-zinc-300 rounded-[2.5rem] p-8 shadow-md flex flex-col gap-6 relative">
+    <div className="w-full bg-white dark:bg-zinc-900 border-2 border-zinc-300 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-md flex flex-col gap-6 relative transition-colors duration-300">
       
-      {/* Injecting styles for a thick, permanently blinking system cursor overlay */}
+      {/* Injecting styles for a thick, dark mode aware blinking custom system cursor */}
       <style>{`
         .live-caret-input {
-          caret-color: #18181b !important;
+          caret-color: currentColor !important;
           animation: blink-caret 1s step-end infinite;
         }
         @keyframes blink-caret {
           from, to { border-color: transparent }
-          50% { border-color: #18181b }
+          50% { border-color: currentColor }
         }
       `}</style>
 
       {/* Top Meta row */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400 tracking-wide uppercase">
+        <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400 dark:text-zinc-500 tracking-wide uppercase">
           <span>Amount</span>
-          <span className="text-zinc-200">—</span>
-          <span className="text-zinc-500 normal-case">{fromObj.code} • {fromObj.country}</span>
+          <span className="text-zinc-200 dark:text-zinc-800">—</span>
+          <span className="text-zinc-500 dark:text-zinc-400 normal-case">{fromObj.code} • {fromObj.country}</span>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[11px] font-bold text-emerald-700 border border-emerald-200 shadow-xs">
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 shadow-xs">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           Mid-market
         </div>
@@ -142,7 +133,7 @@ export default function ConversionCard() {
 
       {/* Input Box Container */}
       <div className="flex items-baseline gap-2 mt-2">
-        <span className="text-3xl font-bold text-zinc-300 select-none tracking-tight uppercase">
+        <span className="text-3xl font-bold text-zinc-300 dark:text-zinc-700 select-none tracking-tight uppercase">
           {fromObj.code.slice(0, 2)}
         </span>
         <input
@@ -151,7 +142,7 @@ export default function ConversionCard() {
           value={amount}
           onChange={handleAmountChange}
           placeholder="0"
-          className="w-full bg-transparent border-none text-5xl font-bold text-zinc-900 outline-none p-0 focus:ring-0 tracking-tight live-caret-input"
+          className="w-full bg-transparent border-none text-5xl font-bold text-zinc-900 dark:text-zinc-100 outline-none p-0 focus:ring-0 tracking-tight live-caret-input"
           autoFocus
         />
       </div>
@@ -167,8 +158,8 @@ export default function ConversionCard() {
               onClick={() => setAmount(preset.toLocaleString('en-US'))}
               className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all shadow-xs cursor-pointer ${
                 isSelected
-                  ? 'bg-zinc-900 text-white'
-                  : 'bg-white border-2 border-zinc-200 text-zinc-600 hover:bg-zinc-50'
+                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                  : 'bg-white border-2 border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-850'
               }`}
             >
               {label}
@@ -183,18 +174,18 @@ export default function ConversionCard() {
         <motion.div 
           whileHover={{ scale: 1.01 }}
           onClick={() => openCurrencyModal('from')}
-          className="flex-1 flex items-center justify-between px-4 py-3 bg-white border-2 border-zinc-200/90 rounded-2xl shadow-sm hover:shadow-md cursor-pointer transition-shadow"
+          className="flex-1 flex items-center justify-between px-4 py-3 bg-white border-2 border-zinc-200/90 rounded-2xl shadow-sm hover:shadow-md cursor-pointer transition-all dark:bg-zinc-900 dark:border-zinc-800 dark:hover:border-zinc-700"
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-800 text-xs font-bold flex items-center justify-center border-2 border-zinc-300 uppercase">
+            <div className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-800 text-xs font-bold flex items-center justify-center border-2 border-zinc-300 uppercase dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300">
               {fromObj.flag}
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-zinc-900 leading-none">{fromObj.code} <span className="text-[10px] font-medium text-zinc-400">FROM</span></span>
-              <span className="text-xs text-zinc-400 font-medium mt-0.5">{fromObj.name}</span>
+              <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-none">{fromObj.code} <span className="text-[10px] font-medium text-zinc-400 dark:text-zinc-500">FROM</span></span>
+              <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">{fromObj.name}</span>
             </div>
           </div>
-          <ChevronDown className="w-4 h-4 text-zinc-400" />
+          <ChevronDown className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
         </motion.div>
 
         {/* Swap Switcher Toggle Button */}
@@ -202,7 +193,7 @@ export default function ConversionCard() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleSwap}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border-2 border-zinc-200 shadow-md flex items-center justify-center cursor-pointer text-zinc-700"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border-2 border-zinc-200 shadow-md flex items-center justify-center cursor-pointer text-zinc-700 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 transition-all"
         >
           <ArrowLeftRight className="w-4 h-4" />
         </motion.button>
@@ -211,48 +202,48 @@ export default function ConversionCard() {
         <motion.div 
           whileHover={{ scale: 1.01 }}
           onClick={() => openCurrencyModal('to')}
-          className="flex-1 flex items-center justify-between px-4 py-3 bg-white border-2 border-zinc-200/90 rounded-2xl shadow-sm hover:shadow-md cursor-pointer transition-shadow pl-6"
+          className="flex-1 flex items-center justify-between px-4 py-3 bg-white border-2 border-zinc-200/90 rounded-2xl shadow-sm hover:shadow-md cursor-pointer transition-all dark:bg-zinc-900 dark:border-zinc-800 dark:hover:border-zinc-700 pl-6"
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-800 text-xs font-bold flex items-center justify-center border-2 border-zinc-300 uppercase">
+            <div className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-800 text-xs font-bold flex items-center justify-center border-2 border-zinc-300 uppercase dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300">
               {toObj.flag}
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-zinc-900 leading-none">{toObj.code} <span className="text-[10px] bg-zinc-950 text-white px-1 py-0.5 rounded font-medium text-[9px]">TO</span></span>
-              <span className="text-xs text-zinc-400 font-medium mt-0.5">{toObj.name}</span>
+              <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-none">{toObj.code} <span className="text-[10px] bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 px-1 py-0.5 rounded font-medium text-[9px]">TO</span></span>
+              <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium mt-0.5">{toObj.name}</span>
             </div>
           </div>
-          <ChevronDown className="w-4 h-4 text-zinc-400" />
+          <ChevronDown className="w-4 h-4 text-zinc-400 dark:text-zinc-500" />
         </motion.div>
       </div>
 
       {/* Converted Output Value Section */}
-      <div className="w-full bg-amber-50/40 border-2 border-amber-200/80 rounded-3xl p-5 flex flex-col gap-4 relative mt-2 shadow-xs">
+      <div className="w-full bg-amber-50/40 border-2 border-amber-200/80 rounded-3xl p-5 flex flex-col gap-4 relative mt-2 shadow-xs dark:bg-zinc-850/20 dark:border-zinc-800">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white border border-zinc-200 text-[10px] font-bold text-zinc-500 shadow-2xs">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white border border-zinc-200 text-[10px] font-bold text-zinc-500 shadow-2xs dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
             CONVERTED TO • Live
           </div>
           <div className="flex items-center gap-2">
-            <button className="w-8 h-8 rounded-full bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-500 hover:text-zinc-900 shadow-2xs transition-colors cursor-pointer">
+            <button className="w-8 h-8 rounded-full bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-500 hover:text-zinc-900 shadow-2xs transition-colors cursor-pointer dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">
               <Copy className="w-3.5 h-3.5" />
             </button>
-            <button className="w-8 h-8 rounded-full bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-500 hover:text-zinc-900 shadow-2xs transition-colors cursor-pointer">
+            <button className="w-8 h-8 rounded-full bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-500 hover:text-zinc-900 shadow-2xs transition-colors cursor-pointer dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">
               <Star className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         <div className="flex items-baseline gap-1 mt-1">
-          <span className="text-2xl font-black text-zinc-900 tracking-tight uppercase">{toObj.code.slice(0, 2)}</span>
-          <motion.span className="text-4xl font-black text-zinc-900 tracking-tight ml-1">
+          <span className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight uppercase">{toObj.code.slice(0, 2)}</span>
+          <motion.span className="text-4xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight ml-1">
             {roundedCount}
           </motion.span>
-          <span className="text-xs font-bold text-zinc-400 tracking-wide ml-2 uppercase">{toObj.code}</span>
+          <span className="text-xs font-bold text-zinc-400 dark:text-zinc-500 tracking-wide ml-2 uppercase">{toObj.code}</span>
         </div>
 
-        <div className="flex items-center gap-2 text-[11px] text-zinc-500 font-medium mt-1">
-          <div className="px-2 py-0.5 rounded-full bg-white border border-zinc-200 flex items-center gap-1 font-semibold text-zinc-600">
+        <div className="flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400 font-medium mt-1">
+          <div className="px-2 py-0.5 rounded-full bg-white border border-zinc-200 flex items-center gap-1 font-semibold text-zinc-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300">
             <span>~ 1 {fromObj.code} = {dynamicExchangeRate.toFixed(4)} {toObj.code}</span>
           </div>
           <span>•</span>
@@ -264,16 +255,16 @@ export default function ConversionCard() {
 
       {/* Action Toolbar Bottom Bar */}
       <div className="flex items-center gap-3 w-full mt-2">
-        <div className="flex-1 h-12 rounded-full bg-zinc-950 flex items-center justify-center text-white text-xs font-bold tracking-wide shadow-md select-none">
+        <div className="flex-1 h-12 rounded-full bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center text-xs font-bold tracking-wide shadow-md select-none">
           Convert {fromObj.code} to {toObj.code} • {toObj.code.slice(0, 2)}
         </div>
         
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-12 h-12 rounded-full bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-700 shadow-sm cursor-pointer"><BarChart3 className="w-4 h-4" /></motion.button>
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-12 h-12 rounded-full bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-700 shadow-sm cursor-pointer"><Share2 className="w-4 h-4" /></motion.button>
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-12 h-12 rounded-full bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-700 shadow-sm cursor-pointer dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300"><BarChart3 className="w-4 h-4" /></motion.button>
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-12 h-12 rounded-full bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-700 shadow-sm cursor-pointer dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300"><Share2 className="w-4 h-4" /></motion.button>
       </div>
 
-      <div className="flex items-center justify-center gap-1.5 text-[10px] text-zinc-400 font-bold tracking-wide mt-2">
-        <Globe className="w-3 h-3 text-zinc-300" />
+      <div className="flex items-center justify-center gap-1.5 text-[10px] text-zinc-400 dark:text-zinc-500 font-bold tracking-wide mt-2">
+        <Globe className="w-3 h-3 text-zinc-300 dark:text-zinc-700" />
         <span>RATES BY ECB + CENTRAL BANK OF KENYA • NO FEES • NO MARKUP</span>
       </div>
 
@@ -287,7 +278,7 @@ export default function ConversionCard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsModalOpen(false)}
-              className="absolute inset-0 bg-zinc-950/30 backdrop-blur-xs"
+              className="absolute inset-0 bg-zinc-950/40 backdrop-blur-xs"
             />
 
             {/* Modal Body Container Card */}
@@ -295,14 +286,14 @@ export default function ConversionCard() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md bg-white border-2 border-zinc-300 rounded-[2rem] p-6 shadow-2xl flex flex-col max-h-[80vh]"
+              className="relative w-full max-w-md bg-white border-2 border-zinc-300 rounded-[2rem] p-6 shadow-2xl flex flex-col max-h-[80vh] dark:bg-zinc-900 dark:border-zinc-800"
             >
               {/* Header Title Bar */}
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-zinc-900">Select currency</h3>
+                <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">Select currency</h3>
                 <button 
                   onClick={() => setIsModalOpen(false)}
-                  className="w-8 h-8 rounded-full bg-zinc-50 border border-zinc-200 flex items-center justify-center text-zinc-500 hover:text-zinc-900 cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-zinc-50 border border-zinc-200 flex items-center justify-center text-zinc-500 hover:text-zinc-900 cursor-pointer dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -310,26 +301,26 @@ export default function ConversionCard() {
 
               {/* Input Search Field Wrapper */}
               <div className="relative mb-4">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-zinc-500" />
                 <input
                   type="text"
                   placeholder="Search currency or country"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-zinc-50/80 border-2 border-zinc-200 rounded-xl outline-none text-sm font-medium text-zinc-900 focus:border-zinc-400 focus:ring-0 transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 bg-zinc-50/80 border-2 border-zinc-200 rounded-xl outline-none text-sm font-medium text-zinc-900 focus:border-zinc-400 focus:ring-0 transition-colors dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-100 dark:focus:border-zinc-700"
                 />
               </div>
 
               {/* Popular Fast Picks Row */}
               <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 scrollbar-none">
-                <span className="text-[10px] font-bold text-zinc-400 tracking-wide uppercase mr-1 select-none">Popular</span>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 tracking-wide uppercase mr-1 select-none">Popular</span>
                 {POPULAR_CODES.map(code => {
                   const curr = CURRENCIES.find(c => c.code === code);
                   return (
                     <button
                       key={code}
                       onClick={() => selectCurrency(code)}
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border-2 border-zinc-200 text-xs font-bold text-zinc-700 hover:border-zinc-400 transition-colors shadow-2xs cursor-pointer"
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border-2 border-zinc-200 text-xs font-bold text-zinc-700 hover:border-zinc-400 transition-colors shadow-2xs cursor-pointer dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-600"
                     >
                       <span className="text-[10px] opacity-60 uppercase">{curr?.flag}</span>
                       <span>{code}</span>
@@ -348,26 +339,26 @@ export default function ConversionCard() {
                       onClick={() => selectCurrency(item.code)}
                       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all cursor-pointer ${
                         isCurrentSelection
-                          ? 'bg-zinc-950 border-zinc-950 text-white shadow-sm'
-                          : 'bg-white border-transparent text-zinc-900 hover:bg-zinc-50 hover:border-zinc-200'
+                          ? 'bg-zinc-950 border-zinc-950 text-white shadow-sm dark:bg-zinc-100 dark:border-zinc-100 dark:text-zinc-950'
+                          : 'bg-white border-transparent text-zinc-900 hover:bg-zinc-50 hover:border-zinc-200 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-850 dark:hover:border-zinc-800'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-8 h-8 rounded-full font-bold text-xs flex items-center justify-center border-2 uppercase ${
-                          isCurrentSelection ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-zinc-50 border-zinc-200 text-zinc-500'
+                          isCurrentSelection ? 'bg-zinc-800 border-zinc-700 text-white dark:bg-zinc-200 dark:border-zinc-300 dark:text-zinc-900' : 'bg-zinc-50 border-zinc-200 text-zinc-500 dark:bg-zinc-950 dark:border-zinc-800 dark:text-zinc-400'
                         }`}>
                           {item.flag}
                         </div>
                         <div className="flex flex-col text-left">
                           <span className="text-sm font-bold leading-none">
-                            {item.code} <span className={`text-[10px] font-medium ml-1 ${isCurrentSelection ? 'text-zinc-400' : 'text-zinc-400'}`}>{item.country}</span>
+                            {item.code} <span className={`text-[10px] font-medium ml-1 ${isCurrentSelection ? 'text-zinc-400 dark:text-zinc-600' : 'text-zinc-400 dark:text-zinc-500'}`}>{item.country}</span>
                           </span>
-                          <span className={`text-xs font-medium mt-0.5 ${isCurrentSelection ? 'text-zinc-400' : 'text-zinc-400'}`}>
+                          <span className={`text-xs font-medium mt-0.5 ${isCurrentSelection ? 'text-zinc-400 dark:text-zinc-600' : 'text-zinc-400 dark:text-zinc-500'}`}>
                             {item.name}
                           </span>
                         </div>
                       </div>
-                      <span className={`text-xs font-bold ${isCurrentSelection ? 'text-zinc-200' : 'text-zinc-500'}`}>
+                      <span className={`text-xs font-bold ${isCurrentSelection ? 'text-zinc-200 dark:text-zinc-700' : 'text-zinc-500'}`}>
                         {item.rate.toFixed(4)}
                       </span>
                     </div>
@@ -375,14 +366,14 @@ export default function ConversionCard() {
                 })}
 
                 {filteredCurrencies.length === 0 && (
-                  <div className="text-center py-6 text-xs font-medium text-zinc-400">
+                  <div className="text-center py-6 text-xs font-medium text-zinc-400 dark:text-zinc-500">
                     No currencies match your search criteria.
                   </div>
                 )}
               </div>
 
               {/* Popup Bottom Sticky Indicator Text */}
-              <div className="text-center text-[10px] font-semibold text-zinc-400 tracking-wide mt-4 uppercase select-none">
+              <div className="text-center text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 tracking-wide mt-4 uppercase select-none">
                 Mid-market rates • Tap to select
               </div>
             </motion.div>

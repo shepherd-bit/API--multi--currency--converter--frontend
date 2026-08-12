@@ -3,3 +3,5 @@
 @theme {
   --font-sans: 'Inter', sans-serif;
 }
+
+@variant dark (&:where(.dark, .dark *));
