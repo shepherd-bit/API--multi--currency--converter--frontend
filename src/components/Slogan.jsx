@@ -1,31 +1,32 @@
-import { motion } from 'motion/react';
 import { Sparkles } from 'lucide-react';
 
 export default function Slogan() {
   return (
-    <section className="flex flex-col items-center text-center pt-12 pb-6 px-4">
+    <div className="w-full flex flex-col items-center text-center px-6 py-9 select-none">
       
-      {/* Heavily Defined Feature Pill Card */}
-      <motion.div 
-        whileHover={{ scale: 1.03 }}
-        className="flex items-center gap-2 px-3 py-1 rounded-full bg-white border-2 border-zinc-300/90 text-[11px] font-semibold text-zinc-700 shadow-sm cursor-default select-none mb-6"
-      >
-        <Sparkles className="w-3 h-3 text-amber-500 fill-amber-500" />
-        <span>New: 12 currencies • mid-market rates</span>
-      </motion.div>
+      {/* Top Feature Announcement Badge - Balanced sizing */}
+      <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-400 shadow-xs mb-5 transition-colors duration-300">
+        <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 animate-pulse" />
+        <span>
+          New: <span className="font-bold text-zinc-950 dark:text-white">12 currencies</span> • mid-market rates
+        </span>
+      </div>
 
-      {/* Slogan Main Heading */}
-      <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 max-w-2xl leading-[1.15]">
-        Convert currencies in real-<br className="hidden sm:inline" />
-        <span className="text-zinc-500">time.</span> Beautifully.
+      {/* Main Core Slogan Headline - The Goldilocks sweet spot */}
+      <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight max-w-3xl leading-[1.15] text-zinc-950 dark:text-zinc-400 transition-colors duration-300">
+        Convert currencies in real-
+        <span className="text-zinc-400 dark:text-white mx-1">time.</span> 
+        Beautifully.
       </h1>
 
-      {/* Sub-text Paragraphs */}
-      <p className="mt-4 text-xs md:text-sm font-medium text-zinc-500 max-w-xl leading-relaxed">
+      {/* Subtitle Description Blocks - Scaled halfway */}
+      <p className="mt-4 text-xs md:text-sm font-medium text-zinc-600 dark:text-zinc-400 max-w-xl leading-relaxed transition-colors duration-300">
         The most delightful converter for travelers, freelancers and businesses.
-        <span className="block mt-0.5">Glass‑clear rates, instant math, zero clutter.</span>
+        <span className="block mt-0.5 text-zinc-400 dark:text-zinc-500">
+          Glass-clear rates, instant math, zero clutter.
+        </span>
       </p>
 
-    </section>
+    </div>
   );
 }
