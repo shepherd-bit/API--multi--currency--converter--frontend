@@ -29,7 +29,8 @@ const CURRENCIES = [
 const POPULAR_CODES = ['USD', 'EUR', 'GBP', 'KES'];
 
 export default function ConversionCard() {
-  const [amount, setAmount] = useState('1000');
+  // Store the formatted string directly in state to preserve commas while typing
+  const [amount, setAmount] = useState('1,000');
   const [fromCurrency, setFromCurrency] = useState('USD');
   const [toCurrency, setToCurrency] = useState('KES');
   
@@ -41,9 +42,14 @@ export default function ConversionCard() {
   const fromObj = CURRENCIES.find(c => c.code === fromCurrency) || CURRENCIES[0];
   const toObj = CURRENCIES.find(c => c.code === toCurrency) || CURRENCIES[3];
 
+  // Helper to convert localized comma strings back into a clean float value for math integration
+  const getRawNumericValue = (str) => {
+    return parseFloat(str.replace(/,/g, '')) || 0;
+  };
+
   // Dynamic cross-multiplication exchange math
   const dynamicExchangeRate = toObj.rate / fromObj.rate;
-  const rawTargetValue = parseFloat(amount || 0) * dynamicExchangeRate;
+  const rawTargetValue = getRawNumericValue(amount) * dynamicExchangeRate;
 
   // Real-time counting motion engines
   const countMotion = useMotionValue(0);
@@ -58,6 +64,22 @@ export default function ConversionCard() {
     });
     return () => controls.stop();
   }, [rawTargetValue, countMotion]);
+
+  // Strips characters, enforces digits, and formats commas into the input string dynamically
+  const handleAmountChange = (e) => {
+    const inputVal = e.target.value.replace(/[^0-9.]/g, ''); // strip non-numeric keys
+    
+    if (inputVal === '') {
+      setAmount('');
+      return;
+    }
+
+    // Split decimal halves to prevent wiping float trailing numbers
+    const parts = inputVal.split('.');
+    parts[0] = Number(parts[0]).toLocaleString('en-US'); 
+    
+    setAmount(parts.length > 1 ? `${parts[0]}.${parts[1]}` : parts[0]);
+  };
 
   // Handle Interchange Swap
   const handleSwap = () => {
@@ -93,6 +115,18 @@ export default function ConversionCard() {
   return (
     <div className="w-full bg-white border-2 border-zinc-300 rounded-[2.5rem] p-8 shadow-md flex flex-col gap-6 relative">
       
+      {/* Injecting styles for a thick, permanently blinking system cursor overlay */}
+      <style>{`
+        .live-caret-input {
+          caret-color: #18181b !important;
+          animation: blink-caret 1s step-end infinite;
+        }
+        @keyframes blink-caret {
+          from, to { border-color: transparent }
+          50% { border-color: #18181b }
+        }
+      `}</style>
+
       {/* Top Meta row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs font-semibold text-zinc-400 tracking-wide uppercase">
@@ -112,23 +146,25 @@ export default function ConversionCard() {
           {fromObj.code.slice(0, 2)}
         </span>
         <input
-          type="number"
+          type="text"
+          inputMode="numeric"
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={handleAmountChange}
           placeholder="0"
-          className="w-full bg-transparent border-none text-5xl font-bold text-zinc-900 outline-none p-0 focus:ring-0 tracking-tight"
+          className="w-full bg-transparent border-none text-5xl font-bold text-zinc-900 outline-none p-0 focus:ring-0 tracking-tight live-caret-input"
+          autoFocus
         />
       </div>
 
       {/* Presets Grid */}
       <div className="flex gap-2.5 mt-1">
         {[100, 500, 1000, 5000].map((preset) => {
-          const isSelected = amount === preset.toString();
+          const isSelected = getRawNumericValue(amount) === preset;
           const label = preset >= 1000 ? `${preset / 1000}K` : preset;
           return (
             <button
               key={preset}
-              onClick={() => setAmount(preset.toString())}
+              onClick={() => setAmount(preset.toLocaleString('en-US'))}
               className={`px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all shadow-xs cursor-pointer ${
                 isSelected
                   ? 'bg-zinc-900 text-white'
