@@ -26,7 +26,6 @@ const CURRENCY_METADATA = {
 };
 
 const POPULAR_CODES = ['USD', 'EUR', 'GBP', 'KES'];
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 export default function ConversionCard() {
   const [amount, setAmount] = useState('1');
@@ -48,7 +47,7 @@ export default function ConversionCard() {
       setIsLoading(true);
       setApiError(null);
       try {
-        const response = await fetch(`${BACKEND_URL}/api/rates?base=${fromCurrency}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/convert?from=USD&to=EUR`);
         if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
         const data = await response.json();
         
