@@ -23,49 +23,50 @@ export default function Trends() {
       </div>
 
       {/* Embedded Sparkline Graphic Container */}
-      <div className="w-full bg-amber-50/20 border-2 border-zinc-100 rounded-2xl p-4 my-3 relative flex flex-col justify-between h-36">
+      <div className="w-full bg-amber-50/10 border border-zinc-100 rounded-2xl p-4 my-3 relative flex flex-col justify-between h-40">
         
-        {/* SVG Custom Vector Chart Path matching the mockup line perfectly */}
-        <div className="w-full h-20 relative mt-2">
-          <svg className="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
+        {/* Fixed Viewport SVG wrapper preventing unnatural horizontal stretching */}
+        <div className="w-full h-24 flex items-center justify-center overflow-hidden">
+          <svg className="w-full h-full max-w-sm overflow-visible" viewBox="0 0 100 40">
             {/* Ambient Gradient Fill Underneath the Path */}
             <defs>
               <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#18181b" stopOpacity="0.08" />
+                <stop offset="0%" stopColor="#18181b" stopOpacity="0.06" />
                 <stop offset="100%" stopColor="#18181b" stopOpacity="0" />
               </linearGradient>
             </defs>
+            
+            {/* Area fill under the path closes correctly at the bottom y=38 */}
             <path
-              d="M 10,25 L 25,25 L 40,24 L 55,27 L 70,24 L 85,29 L 95,10"
+              d="M 5,26 L 20,26 L 35,25 L 50,28 L 65,25 L 80,30 L 95,12 L 95,38 L 5,38 Z"
               fill="url(#chartGradient)"
-              className="absolute inset-0"
             />
             
             {/* Core Vector Stroke */}
             <path
-              d="M 10,25 L 25,25 L 40,24 L 55,27 L 70,24 L 85,29 L 95,10"
+              d="M 5,26 L 20,26 L 35,25 L 50,28 L 65,25 L 80,30 L 95,12"
               fill="none"
               stroke="#18181b"
-              strokeWidth="1.5"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
 
             {/* Individual Grid Coordinates/Data Points */}
-            <circle cx="10" cy="25" r="1.5" fill="white" stroke="#18181b" strokeWidth="1.2" />
-            <circle cx="25" cy="25" r="1.5" fill="white" stroke="#18181b" strokeWidth="1.2" />
-            <circle cx="40" cy="24" r="1.5" fill="white" stroke="#18181b" strokeWidth="1.2" />
-            <circle cx="55" cy="27" r="1.5" fill="white" stroke="#18181b" strokeWidth="1.2" />
-            <circle cx="70" cy="24" r="1.5" fill="white" stroke="#18181b" strokeWidth="1.2" />
-            <circle cx="85" cy="29" r="1.5" fill="white" stroke="#18181b" strokeWidth="1.2" />
+            <circle cx="5" cy="26" r="2" fill="white" stroke="#18181b" strokeWidth="1.5" />
+            <circle cx="20" cy="26" r="2" fill="white" stroke="#18181b" strokeWidth="1.5" />
+            <circle cx="35" cy="25" r="2" fill="white" stroke="#18181b" strokeWidth="1.5" />
+            <circle cx="50" cy="28" r="2" fill="white" stroke="#18181b" strokeWidth="1.5" />
+            <circle cx="65" cy="25" r="2" fill="white" stroke="#18181b" strokeWidth="1.5" />
+            <circle cx="80" cy="30" r="2" fill="white" stroke="#18181b" strokeWidth="1.5" />
             
             {/* Accent Target Node Point */}
-            <circle cx="95" cy="10" r="2" fill="#18181b" />
+            <circle cx="95" cy="12" r="3" fill="#18181b" />
           </svg>
         </div>
 
         {/* X-Axis Timestamps */}
-        <div className="flex justify-between items-center text-[10px] font-bold text-zinc-400 px-1 mt-1 uppercase select-none">
+        <div className="flex justify-between items-center text-[10px] font-bold text-zinc-400 px-2 uppercase select-none">
           <span>Mon</span>
           <span>Wed</span>
           <span>Fri</span>
