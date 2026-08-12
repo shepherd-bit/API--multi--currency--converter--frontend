@@ -26,7 +26,7 @@ const CURRENCY_METADATA = {
 };
 
 const POPULAR_CODES = ['USD', 'EUR', 'GBP', 'KES'];
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://api-multi-currency-converter-backen.vercel.app';
 
 export default function ConversionCard() {
   const [amount, setAmount] = useState('1');
